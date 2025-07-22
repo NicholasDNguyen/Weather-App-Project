@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Weather App</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to right, #83a4d4, #b6fbff);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .weather-container {
+      background-color: white;
+      border-radius: 12px;
+      padding: 30px;
+      width: 300px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+
+    input {
+      width: 80%;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      margin-bottom: 20px;
+    }
+
+    button {
+      padding: 10px 20px;
+      border: none;
+      background-color: #4285f4;
+      color: white;
+      font-size: 16px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .result {
+      margin-top: 20px;
+    }
+
+    .result h2 {
+      margin: 10px 0;
+    }
+
+    .error {
+      color: red;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="weather-container">
+    <h1>🌤️ Weather App</h1>
+    <input type="text" id="cityInput" placeholder="Enter city name" />
+    <button onclick="getWeather()">Get Weather</button>
+    <div id="weatherResult" class="result"></div>
+    <div id="errorMsg" class="error"></div>
+  </div>
+
+  <script>
+    async function getWeather() {
+      const city = document.getElementById("cityInput").value;
+      const apiKey = "YOUR_API_KEY_HERE";
+      const resultDiv = document.getElementById("weatherResult");
+      const errorDiv = document.getElementById("errorMsg");
+      
+      resultDiv.innerHTML = "";
+      errorDiv.textContent = "";
+
+      if (!city) {
+        errorDiv.textContent = "Please enter a city name.";
+        return;
+      }
+
+      const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
+
+      try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error("City not found");
+
+        const data = await response.json();
+        const { name, main, weather, wind } = data;
+
+        resultDiv.innerHTML = `
+          <h2>${name}</h2>
+          <p><strong>${weather[0].main}</strong>: ${weather[0].description}</p>
+          <p>🌡️ Temp: ${main.temp}°C</p>
+          <p>💧 Humidity: ${main.humidity}%</p>
+          <p>💨 Wind: ${wind.speed} m/s</p>
+        `;
+      } catch (err) {
+        errorDiv.textContent = err.message;
+      }
+    }
+  </script>
+</body>
+</html>
